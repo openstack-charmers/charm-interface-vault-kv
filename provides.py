@@ -12,14 +12,7 @@
 
 from charms.reactive import is_flag_set, toggle_flag, clear_flag
 from charms.reactive import Endpoint
-
-from charmhelpers.contrib.network.ip import (
-    is_address_in_network,
-    resolve_network_cidr,
-)
-from charmhelpers.core.hookenv import (
-    network_get_primary_address,
-)
+from charmhelpers import core as ch_core
 
 
 class VaultKVProvides(Endpoint):
@@ -42,21 +35,13 @@ class VaultKVProvides(Endpoint):
         """ Publish URL for Vault to all Relations
 
         :param vault_url: api url used by remote client to speak to vault.
-        :param remote_binding: if provided, remote units not using this
-                               binding will be ignored.
+        :param remote_binding: Deprecated
         """
+        if remote_binding:
+            ch_core.hookenv.log(
+                "Use of remote_binding in publish_url is deprecated. "
+                "See LP Bug #1895185", "WARNING")
         for relation in self.relations:
-            if remote_binding:
-                units = relation.units
-                if units:
-                    addr = units[0].received['ingress-address'] or \
-                        units[0].received['access_address']
-                    bound_cidr = resolve_network_cidr(
-                        network_get_primary_address(remote_binding)
-                    )
-                    if not (addr and is_address_in_network(bound_cidr, addr)):
-                        continue
-
             relation.to_publish['vault_url'] = vault_url
 
     def publish_ca(self, vault_ca):
