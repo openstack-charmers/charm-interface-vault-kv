@@ -39,6 +39,10 @@ class VaultKVRequires(Endpoint):
         except NotImplementedError:
             return hookenv.unit_private_ip()
 
+    @property
+    def _unit_name(self):
+        return f"{hookenv.model_uuid()}-{hookenv.local_unit()}"
+
     def request_secret_backend(self, name, isolated=True):
         """Request creation and access to a secret backend
 
@@ -51,7 +55,7 @@ class VaultKVRequires(Endpoint):
             relation.to_publish['access_address'] = self.endpoint_address
             relation.to_publish['hostname'] = socket.gethostname()
             relation.to_publish['isolated'] = isolated
-            relation.to_publish['unit_name'] = hookenv.local_unit()
+            relation.to_publish['unit_name'] = self._unit_name
 
     @property
     def unit_role_id(self):
@@ -59,8 +63,11 @@ class VaultKVRequires(Endpoint):
 
         :returns role_id: AppRole ID for unit
         :rtype role_id: str"""
-        role_key = '{}_role_id'.format(hookenv.local_unit())
-        return self.all_joined_units.received.get(role_key)
+        for key in [self._unit_name, hookenv.local_unit()]:
+            role_key = '{}_role_id'.format(key)
+            value = self.all_joined_units.received.get(role_key)
+            if value:
+                return value
 
     @property
     def unit_token(self):
@@ -69,8 +76,11 @@ class VaultKVRequires(Endpoint):
 
         :returns token: Vault one-shot toekn for secret_id response
         :rtype token: str"""
-        token_key = '{}_token'.format(hookenv.local_unit())
-        return self.all_joined_units.received.get(token_key)
+        for key in [self._unit_name, hookenv.local_unit()]:
+            token_key = '{}_token'.format(key)
+            value = self.all_joined_units.received.get(token_key)
+            if value:
+                return value
 
     @property
     def all_unit_tokens(self):
@@ -79,13 +89,14 @@ class VaultKVRequires(Endpoint):
 
         :returns token: Vault one-shot token for secret_id response
         :rtype token: str"""
-        token_key = '{}_token'.format(hookenv.local_unit())
         tokens = set()
-        for relation in self.relations:
-            for unit in relation.units:
-                token = unit.received.get(token_key)
-                if token:
-                    tokens.add(token)
+        for key in [self._unit_name, hookenv.local_unit()]:
+            token_key = '{}_token'.format(key)
+            for relation in self.relations:
+                for unit in relation.units:
+                    token = unit.received.get(token_key)
+                    if token:
+                        tokens.add(token)
 
         return list(tokens)
 
