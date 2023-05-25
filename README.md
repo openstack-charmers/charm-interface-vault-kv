@@ -48,5 +48,24 @@ from charms.reactive.flags import endpoint_from_flag
  	)
  ```
 
- Note that the backend name must be prefixed with 'charm-' otherwise the vault
- charm will skip creation of the secrets backend and associated access.
+## Interface Schema Details
+* Initiates the kv-store requesting a secrets backend by sending:
+  - **`str`** - `secret_backend`
+
+	Note that the backend name must be prefixed with '`charm-`' otherwise the vault charm will skip creation of the secrets backend and associated access.
+  - **`str`** - `unit_name`
+
+	formatted by the requirer as
+	'`$model-uuid:$unit-name`' using a '`:`' to delimit between the model-uuid and the juju unit-name
+  - **`str`** - `access_address`
+
+	ip address used to gain access this kv-store, will be associated as a CIDR with netmask `/32` with the authorized vault token when 
+	`isolated`
+
+  - **`str`** - `hostname`
+
+    Creates an approle with a policy associated with this unit's hostname.
+
+  - **`bool`** - `isolated`  (defaults: `True` )
+	* `True` - sets the policy on the secret to `SECRET_BACKEND_HCL`
+	* `False` - sets the policy on the secret to `SECRET_BACKEND_SHARED_HCL`

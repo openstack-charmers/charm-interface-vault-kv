@@ -41,7 +41,7 @@ class VaultKVRequires(Endpoint):
 
     @property
     def _unit_name(self):
-        return f"{hookenv.model_uuid()}-{hookenv.local_unit()}"
+        return f"{hookenv.model_uuid()}:{hookenv.local_unit()}"
 
     def request_secret_backend(self, name, isolated=True):
         """Request creation and access to a secret backend
