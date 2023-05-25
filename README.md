@@ -56,7 +56,7 @@ from charms.reactive.flags import endpoint_from_flag
   - **`str`** - `unit_name`
 
 	formatted by the requirer as
-	'`$model-uuid:$unit-name`' using a '`:`' to delimit between the model-uuid and the juju unit-name
+	'`$model-uuid:$unit-name`' using a '`-`' to delimit between the model-uuid and the juju unit-name
   - **`str`** - `access_address`
 
 	ip address used to gain access this kv-store, will be associated as a CIDR with netmask `/32` with the authorized vault token when 
