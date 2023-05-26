@@ -66,7 +66,7 @@ class VaultKVProvides(Endpoint):
         # expicitly.
         unit_name = self.get_remote_unit_name(unit)
 
-        # each unit in this relation should have one role_id, token pair associated
+        # each unit in a relation should have one role_id/token pair associated
         # if the unit_name shared over the relation is updated, we should clear
         # previously associated role_id/token pairs from the relation
         unit_id = unit_name.split("/")[1]  # the unit's id number
