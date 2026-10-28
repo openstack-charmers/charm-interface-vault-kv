@@ -18,10 +18,13 @@ from charmhelpers import core as ch_core
 class VaultKVProvides(Endpoint):
     def manage_flags(self):
         any_fields_changed = False
+        # unit_name may be the only field to change, e.g. when an upgraded
+        # client starts sending it on an existing cmr relation.
         for field in ('access_address',
                       'secret_backend',
                       'hostname',
-                      'isolated'):
+                      'isolated',
+                      'unit_name'):
             flag = self.expand_name('endpoint.{endpoint_name}.'
                                     'changed.{}').format(field)
             any_fields_changed = any_fields_changed or is_flag_set(flag)
